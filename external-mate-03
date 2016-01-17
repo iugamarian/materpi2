@@ -1,0 +1,4 @@
+#!/bin/bash
+# FIREFOX CACHE PI
+mkdir /home/pi/.cache/mozilla/firefox
+chown pi /home/pi/.cache/mozilla/firefox
