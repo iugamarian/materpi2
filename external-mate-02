@@ -1,0 +1,29 @@
+#!/bin/bash
+# DRIVE READY
+#
+externaldrivedirpath=/external
+#
+### Cache Firefox
+rm -rf /home/pi/.cache/mozilla/firefox
+mkdir -p /home/pi/.cache/mozilla/
+chown pi /home/pi/.cache
+chown pi /home/pi/.cache/mozilla/
+dd if=/dev/zero of=$externaldrivedirpath/firefoxcache bs=1M count=2048
+chmod 0600 $externaldrivedirpath/firefoxcache
+mke2fs -t ext4 -m 0 -F -L firefoxcache -E lazy_itable_init=0,lazy_journal_init=0 $externaldrivedirpath/firefoxcache
+echo "$externaldrivedirpath/firefoxcache  /home/pi/.cache/mozilla/         ext4    defaults          0       4" >> /etc/fstab
+### Swap file
+dd if=/dev/zero of=$externaldrivedirpath/swapfile bs=1M count=2048
+chmod 0600 $externaldrivedirpath/swapfile
+sleep 1
+sync
+mkswap $externaldrivedirpath/swapfile
+echo "$externaldrivedirpath/swapfile  none          swap    sw,pri=3          0       0" >> /etc/fstab
+mkdir -p /home/pi/.config
+chown pi /home/pi/.config
+cp -r transmission /home/pi/.config
+chown -R pi /home/pi/.config/transmission
+sleep 1
+sync
+sleep 5
+reboot
