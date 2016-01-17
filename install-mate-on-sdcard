@@ -1,0 +1,221 @@
+#!/bin/bash
+# Before running, lsblk to indicate card here
+#********** END Configuration **************************************************************
+
+# Check to see if device is indicated
+if [ `echo $2 | grep dev |wc -c` -eq 0 ]; then
+    lsblk
+	echo ""
+	echo "This installs directly from unextracted .xz image. No need to extract."
+	echo ""
+    echo "Command usage (be very careful):"
+	echo ""
+    echo "install-mate-on-sdcard image device"
+	echo ""
+	echo "install-mate-on-sdcard ubuntu-mate-15.10.1-desktop-armhf-raspberry-pi-2.img /dev/sdx"
+	echo ""
+    exit 1
+else
+    echo ""
+    echo "The sdcard to install mate to is $2."
+    echo ""
+fi
+# Check to see if running as root
+echo -e "\nChecking for root."
+if [ `id -u` != 0 ]; then
+    echo "Not root."
+    echo -e "Need to be run as root.\n"
+    echo " Try 'sudo sh rpiarchppp' as a user. Exiting."
+    echo ""
+    exit 1
+else
+    echo "Root."
+fi
+# Noting time when started
+start_time=$(date)
+echo ""
+echo ""
+echo "============================================================"
+echo ""
+sleep 2
+# Allowing dd to be able to clear MBR (permission)
+viewsudouser=`logname`
+viewroot=""
+# A string echo "" is seen by wc as having 1 character so n+1, and a failed grep has a wc of 0
+if [ `echo $viewsudouser | grep "root" |wc -c` != 0 ] && [ `echo $viewsudouser |wc -c` = 5 ]; then
+viewroot="root"
+fi
+# On Arch a no login name gives a wc of 1
+if [ `echo $viewsudouser |wc -c` = 1 ]; then
+viewroot="root"
+fi
+# On other systems no login name maybe gives no login name
+if [ `echo $viewsudouser | grep "no login name" |wc -c` != 0 ]; then
+viewroot="root"
+fi
+if [ `echo $viewroot |wc -c` != 1 ]; then
+echo ""
+echo "Only root."
+echo "Adding root to the disk group."
+echo""
+usermod -G disk --append root
+else
+echo ""
+echo "Sudo is used by a user named $viewsudouser."
+echo "Adding user named $viewsudouser to the disk group."
+echo ""
+usermod -G disk --append $viewsudouser
+fi
+sleep 2
+# Detecting availability of indicated device
+if ! (fdisk -l | grep $2); then
+    echo "Can't find ($2). Insert and indicate it."
+    echo "No files. Only devices. Exiting."
+    echo ""
+    exit 1
+else
+    echo "Found indicated device $2."
+    echo ""
+fi
+echo ""
+echo "============================================================"
+echo ""
+sleep 2
+# Safety unmounting of possible partitions, logicals can start from 5
+echo "Unmounting partitions, up to 9, with or without p in front:"
+echo ""
+umount "$2"1
+umount "$2"2
+umount "$2"3
+umount "$2"4
+umount "$2"5
+umount "$2"6
+umount "$2"7
+umount "$2"8
+umount "$2"9
+umount "$2"p1
+umount "$2"p2
+umount "$2"p3
+umount "$2"p4
+umount "$2"p5
+umount "$2"p6
+umount "$2"p7
+umount "$2"p8
+umount "$2"p9
+swapoff "$2"1
+swapoff "$2"2
+swapoff "$2"3
+swapoff "$2"4
+swapoff "$2"5
+swapoff "$2"6
+swapoff "$2"7
+swapoff "$2"8
+swapoff "$2"9
+swapoff "$2"p1
+swapoff "$2"p2
+swapoff "$2"p3
+swapoff "$2"p4
+swapoff "$2"p5
+swapoff "$2"p6
+swapoff "$2"p7
+swapoff "$2"p8
+swapoff "$2"p9
+echo ""
+sleep 5
+echo ""
+echo "Deleting MBR and fat allocation table general area with dd:"
+# Need to dd more because fat filesystems may get confused about random
+# data in their first part where they store the fat allocation table
+dd if=/dev/zero of=$2 bs=1M count=32 iflag=fullblock
+sleep 3
+partprobe
+sleep 2
+# Is it in .xz archive or not
+if [ `echo $1 | grep .xz |wc -c` -eq 0 ]; then
+ddrescue -d -D --force $1 $2
+else
+#https://lists.gnu.org/archive/html/info-gnu/2015-09/msg00005.html
+#Ubuntu 15.10 has GNU ddrescue 1.19 so no standard input so need to use slower dd
+#xzcat=xz --decompress --stdout
+xz --decompress --stdout --keep $1 | dd of=$2 bs=1M conv=notrunc iflag=fullblock
+fi
+sleep 2
+echo ""
+echo "=================================================="
+echo ""
+echo ""
+echo "Detecting if the device is seen as a mmcblk so that partitions have a p in front"
+echo ""
+if [ `echo $2 | grep mmcblk |wc -c` != 0 ]; then
+echo ""
+echo "Partition numbers have a p in front of them..."
+bootpart="$2"p1
+rootpart="$2"p2
+else
+echo ""
+echo "Partition numbers don't have a p in front of them..."
+bootpart="$2"1
+rootpart="$2"2
+fi
+echo ""
+echo -n "Boot partition is "
+echo $bootpart
+echo -n "Root partition is "
+echo $rootpart
+echo ""
+echo "Mounting partitions:"
+echo ""
+partprobe
+#Waiting for Linux to "see" the partitions"
+sleep 5
+mkdir mountdir
+mount $rootpart mountdir
+mkdir mountdir/boot
+mount $bootpart mountdir/boot
+echo ""
+echo "=================================================="
+echo ""
+sleep 2
+sync
+sleep 2
+mv mountdir/boot/config.txt mountdir/boot/config.old
+cat <<EOF > mountdir/boot/config.txt
+hdmi_group=2
+hdmi_mode=35
+hdmi_drive=2
+hdmi_force_edid_audio=1
+hdmi_force_hotplug=1
+gpu_mem=256
+framebuffer_depth=24
+start_file=start_x.elf
+fixup_file=fixup_x.dat
+avoid_warnings=2
+max_usb_current=1
+smsc95xx.turbo_mode=N
+# Overclock - Cpu frequency fixed (no sleep), increased ram speed
+arm_freq=900
+over_voltage=0
+core_freq=450
+sdram_freq=450
+force_turbo=1
+avoid_pwm_pll=1
+EOF
+cp configure-mate* mountdir/root
+sleep 1
+sync
+sleep 2
+umount $bootpart
+umount $rootpart
+# Noting time when finished
+finish_time=$(date)
+echo ""
+echo ""
+echo "============================================================"
+echo ""
+echo "Started at: $start_time"
+echo ""
+echo "Finished at: $finish_time"
+echo ""
+echo "============================================================"
+echo ""
+sleep 1
