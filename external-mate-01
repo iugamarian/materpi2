@@ -1,0 +1,14 @@
+#!/bin/bash
+# DRIVE PREPARE
+#
+externaldrivedirpath=/external
+#
+externaldriveuuid=xxxxxxxx-xxxx-xxxx-xxxx-xxxx
+#
+mkdir $externaldrivedirpath
+ln -s $externaldrivedirpath external
+echo "UUID=$externaldriveuuid  $externaldrivedirpath          ext4    defaults          0       3" >> /etc/fstab
+sleep 2
+sync
+sleep 2
+reboot
