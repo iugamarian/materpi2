@@ -1,0 +1,49 @@
+#!/bin/bash
+#UPDATE, UPGRADE AND CONFIGFILES
+# Check to see if running as root
+echo -e "\nChecking for root."
+if [ `id -u` != 0 ]; then
+	echo ""
+    echo "Not root."
+	echo ""
+    echo -e "Need to be run as root.\n"
+	echo ""
+    echo "Try 'sudo -s' then the script."
+    echo ""
+    exit 1
+else
+	echo ""
+    echo "Root."
+	echo ""
+fi
+apt-get update
+apt-get upgrade -y
+apt-get install -y gddrescue decibel-audio-player mc ncdu iotop git-core synaptic ubuntu-restricted-extras build-essential gcc-avr file-roller hardinfo xsane
+# Disable automatic smart testing because hdds are slower for five minutes after each detection:
+systemctl disable smartd
+# Sound always on to avoid hdmi audio popping:
+sed -i 's/load-module module-suspend-on-idle/#load-module module-suspend-on-idle/g' /etc/pulse/default.pa
+sed -i 's/load-module module-suspend-on-idle/#load-module module-suspend-on-idle/g' /etc/pulse/system.pa
+# Avoid system hangs because of audio, let the audio hang instead:
+cp /etc/pulse/daemon.conf /etc/pulse/daemon.conf.original
+echo "# Settings modified from their default to avoid system hangs:" > /etc/pulse/daemon.conf
+echo "" >> /etc/pulse/daemon.conf
+echo "flat-volumes = no" >> /etc/pulse/daemon.conf
+echo "nice-level = -1" >> /etc/pulse/daemon.conf
+echo "realtime-scheduling = no" >> /etc/pulse/daemon.conf
+sleep 3
+cat <<EOF > /etc/sysctl.d/30-rpi-optimizations.conf
+vm.swappiness = 60
+vm.min_free_kbytes = 8192
+vm.vfs_cache_pressure = 500
+vm.dirty_bytes = 8388608
+vm.dirty_background_bytes = 8388608
+vm.dirty_writeback_centisecs = 600
+vm.dirty_expire_centisecs = 600
+EOF
+
+mv configure-mate03 executedscripts
+sleep 2
+sync
+sleep 3
+reboot
