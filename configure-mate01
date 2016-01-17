@@ -1,0 +1,35 @@
+#!/bin/bash
+# RESIZE ROOT PART 1 OF 2
+# Check to see if running as root
+echo -e "\nChecking for root."
+if [ `id -u` != 0 ]; then
+	echo ""
+    echo "Not root."
+	echo ""
+    echo -e "Need to be run as root.\n"
+	echo ""
+    echo "Try 'sudo -s' then the script."
+    echo ""
+    exit 1
+else
+	echo ""
+    echo "Root."
+	echo ""
+fi
+# "Fdisk area". Be careful about the new lines (Enter).
+fdisk /dev/mmcblk0 <<EOF
+d
+2
+n
+p
+2
+
+
+w
+EOF
+# Finished partitioning. Be careful about the new lines (Enter).
+mkdir executedscripts
+mv configure-mate01 executedscripts
+sync
+sleep 3
+reboot
