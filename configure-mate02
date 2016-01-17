@@ -1,0 +1,27 @@
+#!/bin/bash
+# RESIZE ROOT PART 2 OF 2
+# Check to see if running as root
+echo -e "\nChecking for root."
+if [ `id -u` != 0 ]; then
+	echo ""
+    echo "Not root."
+	echo ""
+    echo -e "Need to be run as root.\n"
+	echo ""
+    echo "Try 'sudo -s' then the script."
+    echo ""
+    exit 1
+else
+	echo ""
+    echo "Root."
+	echo ""
+fi
+mv configure-mate02 executedscripts
+sleep 1
+sync
+sleep 2
+resize2fs /dev/mmcblk0p2
+sleep 2
+sync
+sleep 3
+reboot
