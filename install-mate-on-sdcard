@@ -196,7 +196,7 @@ smsc95xx.turbo_mode=N
 # For Raspberry Pi 2 arm_freq is best at 2 x core_freq
 #arm_freq=900
 # For Raspberry Pi 3 arm_freq is best at 2.5 x core_freq
-arm_freq=1250
+arm_freq=1125
 # To be sure warranty bit not set, over_voltage needs to be 0 
 over_voltage=0
 # Core freq and sdram_freq are best equal and make the gpu faster
@@ -233,7 +233,7 @@ echo "./script"
 echo ""
 echo "Most of the scripts make a reboot when they finish,"
 echo ""
-echo " continue from sudo -s for next script. Be careful with external-mate* need UUID."
+echo "continue from sudo -s for next script. Be careful with external-mate* need UUID."
 echo ""
 echo "============================================================"
 echo ""
