@@ -191,12 +191,13 @@ start_file=start_x.elf
 fixup_file=fixup_x.dat
 avoid_warnings=2
 max_usb_current=1
+# Avoid power supply overload by not boosting usb network chip
 smsc95xx.turbo_mode=N
-# Speed optimization for Raspberry Pi 2 and 3
+# Speed optimization for Raspberry Pi 2 and 3 (uncomment for one)
 # For Raspberry Pi 2 arm_freq is best at 2 x core_freq
 #arm_freq=900
 # For Raspberry Pi 3 arm_freq is best at 2.5 x core_freq
-arm_freq=1125
+#arm_freq=1125
 # To be sure warranty bit not set, over_voltage needs to be 0 
 over_voltage=0
 # Core freq and sdram_freq are best equal and make the gpu faster
@@ -204,6 +205,8 @@ core_freq=450
 sdram_freq=450
 # To reduce power draw spikes force_turbo needs to be 1
 force_turbo=1
+# Allow monitor to turn off not just display black screen on sleep
+hdmi_blanking=1
 EOF
 cp configure-mate* mountdir/root
 cp external-mate* mountdir/root
