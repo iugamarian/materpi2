@@ -207,6 +207,8 @@ sdram_freq=450
 force_turbo=1
 # Allow monitor to turn off not just display black screen on sleep
 hdmi_blanking=1
+# Allow sound after kernel update
+dtparam=audio=on
 EOF
 cp configure-mate* mountdir/root
 cp external-mate* mountdir/root
