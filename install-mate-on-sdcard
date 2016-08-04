@@ -184,8 +184,7 @@ hdmi_group=2
 hdmi_mode=35
 hdmi_drive=2
 # According to https://ubuntu-mate.community/t/hdmi-on-rpi-ubuntumate/1248/19
-# Ubuntu Mate defaults to hdmi sound so hdmi_force_edid_audio=1 not required, tested
-#hdmi_force_edid_audio=1
+hdmi_force_edid_audio=1
 hdmi_force_hotplug=1
 gpu_mem=256
 framebuffer_depth=24
