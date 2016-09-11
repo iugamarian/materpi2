@@ -17,8 +17,8 @@
 
 # Configuration - choose here carefuly 
 
-drivetobeformatted=/dev/sdwhat 			# Before running, lsblk to indicate card here
-nameofdrive=bigstorage
+drivetobeformatted=/dev/sda 			# Before running, lsblk to indicate card here
+nameofdrive=materoot
 
 #********** END Configuration **************************************************************
 
@@ -109,11 +109,6 @@ echo "Found wget."
 else
 neededprograms+="wget "
 fi
-if [ `which bsdtar |wc -c` != 0 ]; then
-echo "Found bsdtar."
-else
-neededprograms+="bsdtar "
-fi
 echo ""
 if [ "$neededprograms" = "" ]; then
 echo "All needed programs available."
@@ -189,7 +184,7 @@ echo ""
 echo "Deleting MBR and fat allocation table general area with dd:"
 # Need to dd more because fat filesystems may get confused about random
 # data in their first part where they store the fat allocation table
-dd if=/dev/zero of=$drivetobeformatted bs=1M count=32 iflag=fullblock
+dd if=/dev/zero of=$drivetobeformatted bs=1M count=1024 iflag=fullblock
 echo ""
 echo ""
 echo "Partitioning indicated device with parted, selecting GPT:"
@@ -212,14 +207,14 @@ sleep 2
 #Tip: Most Linux native file systems map to the same partition code (0x83), so it is
 #perfectly safe to e.g. use ext2 for an ext4-formatted partition.
 # BOOT
-parted -s $drivetobeformatted unit cyl mkpart primary ext2 -- 1 7
+parted -s $drivetobeformatted unit cyl mkpart primary ext2 -- 1 47
 # one cylinder is about 60 MB in size, 63 cylinders, start from 1 not 0 to avoid mbr writeover
 sleep 2
 # SWAP
-parted -s $drivetobeformatted unit cyl mkpart primary ext2 -- 8 71
+parted -s $drivetobeformatted unit cyl mkpart primary ext2 -- 48 579
 sleep 2
 # ROOT
-parted -s $drivetobeformatted unit cyl mkpart primary ext2 -- 72 -2
+parted -s $drivetobeformatted unit cyl mkpart primary ext2 -- 580 -2
 # sync the system disk partition tables
 partprobe $drivetobeformatted
 sleep 2
@@ -251,7 +246,7 @@ echo ""
 echo "Formatting boot partition:"
 echo ""
 # Disabling lazy options so that all inodes get written now not bit by bit later.
-mke2fs -t ext4 -m 0 -F -L firefoxcache -E lazy_itable_init=0,lazy_journal_init=0 $bootpartition
+mke2fs -t ext4 -m 0 -F -L bootmate -E lazy_itable_init=0,lazy_journal_init=0 $bootpartition
 sleep 2
 ### Swap parttion
 echo -n "Swap partition is: "
