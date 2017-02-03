@@ -4,11 +4,11 @@ apt-get install -y gddrescue mc ncdu iotop git-core synaptic ubuntu-restricted-e
 # Disable automatic smart testing because hdds are slower for five minutes after each detection:
 systemctl disable smartd
 cat <<EOF > /etc/sysctl.d/30-rpi-optimizations.conf
-vm.swappiness = 60
-vm.min_free_kbytes = 8192
+vm.swappiness = 10
+vm.min_free_kbytes = 32768
 vm.vfs_cache_pressure = 500
-vm.dirty_bytes = 8388608
-vm.dirty_background_bytes = 8388608
+vm.dirty_bytes = 33554432
+vm.dirty_background_bytes = 33554432
 vm.dirty_writeback_centisecs = 600
 vm.dirty_expire_centisecs = 600
 EOF
