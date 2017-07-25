@@ -133,6 +133,9 @@ sleep 2
 # Is it in .xz archive or not
 if [ `echo $1 | grep .xz |wc -c` -eq 0 ]; then
 ddrescue -d -D --force $1 $2
+elif [ `echo $1 | grep .zip |wc -c` -eq 0 ]; then
+#https://www.tutorialspoint.com/unix/if-elif-statement.htm
+unzip -p 2017-06-21-raspbian-jessie-lite.zip | dd of=/dev/sdc bs=1M conv=notrunc iflag=fullblock
 else
 #https://lists.gnu.org/archive/html/info-gnu/2015-09/msg00005.html
 #Ubuntu 15.10 has GNU ddrescue 1.19 so no standard input so need to use slower dd
