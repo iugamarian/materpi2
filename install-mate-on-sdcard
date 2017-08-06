@@ -67,6 +67,9 @@ echo ""
 usermod -G disk --append $viewsudouser
 fi
 sleep 2
+# Trying to install required programs
+apt-get update
+apt-get install -y bsdtar gddrescue fdisk
 # Detecting availability of indicated device
 if ! (fdisk -l | grep $2); then
     echo "Can't find ($2). Insert and indicate it."
