@@ -140,13 +140,16 @@ if [ `echo $1 | grep .xz |wc -c` -ne 0 ]; then
 #https://lists.gnu.org/archive/html/info-gnu/2015-09/msg00005.html
 #Ubuntu 15.10 has GNU ddrescue 1.19 so no standard input so need to use slower dd
 #xzcat=xz --decompress --stdout
+echo "Uncompressing and writing .xz archive:"
 xz --decompress --stdout --keep $1 | dd of=$2 bs=1M conv=notrunc iflag=fullblock
 # Is it in .zip archive
 elif [ `echo $1 | grep .zip |wc -c` -ne 0 ]; then
 #https://www.tutorialspoint.com/unix/if-elif-statement.htm
+echo "Uncompressing and writing .zip archive:"
 unzip -p $1 | dd of=$2 bs=1M conv=notrunc iflag=fullblock
 else
 # Not in any archive
+echo "Writing unarchived image:"
 ddrescue -d -D --force $1 $2
 fi
 sleep 2
