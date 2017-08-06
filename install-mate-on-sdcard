@@ -133,17 +133,21 @@ dd if=/dev/zero of=$2 bs=1M count=32 iflag=fullblock
 sleep 3
 partprobe
 sleep 2
-# Is it in .xz archive or not
-if [ `echo $1 | grep .xz |wc -c` -eq 0 ]; then
-ddrescue -d -D --force $1 $2
-elif [ `echo $1 | grep .zip |wc -c` -eq 0 ]; then
+#https://www.tutorialspoint.com/unix/unix-basic-operators.htm
 #https://www.tutorialspoint.com/unix/if-elif-statement.htm
-unzip -p $1 | dd of=$2 bs=1M conv=notrunc iflag=fullblock
-else
+# Is it in .xz archive
+if [ `echo $1 | grep .xz |wc -c` -ne 0 ]; then
 #https://lists.gnu.org/archive/html/info-gnu/2015-09/msg00005.html
 #Ubuntu 15.10 has GNU ddrescue 1.19 so no standard input so need to use slower dd
 #xzcat=xz --decompress --stdout
 xz --decompress --stdout --keep $1 | dd of=$2 bs=1M conv=notrunc iflag=fullblock
+# Is it in .zip archive
+elif [ `echo $1 | grep .zip |wc -c` -ne 0 ]; then
+#https://www.tutorialspoint.com/unix/if-elif-statement.htm
+unzip -p $1 | dd of=$2 bs=1M conv=notrunc iflag=fullblock
+else
+# Not in any archive
+ddrescue -d -D --force $1 $2
 fi
 sleep 2
 echo ""
