@@ -213,14 +213,14 @@ smsc95xx.turbo_mode=N
 # For Raspberry Pi 3 arm_freq is best at 2.5 x core_freq
 #arm_freq=1125
 # To be sure warranty bit not set, over_voltage needs to be 0 
-over_voltage=0
+#over_voltage=0
 # Core freq and sdram_freq are best equal and make the gpu faster
-core_freq=450
-sdram_freq=450
+#core_freq=450
+#sdram_freq=450
 # To reduce power draw spikes force_turbo needs to be 1
-force_turbo=1
+#force_turbo=1
 # Allow monitor to turn off not just display black screen on sleep
-hdmi_blanking=1
+#hdmi_blanking=1
 # Allow sound after kernel update
 dtparam=audio=on
 EOF
