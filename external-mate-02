@@ -10,7 +10,7 @@ chown pi /home/pi/.cache
 chown pi /home/pi/.cache/mozilla/
 dd if=/dev/zero of=$externaldrivedirpath/firefoxcache bs=1M count=2048
 chmod 0600 $externaldrivedirpath/firefoxcache
-mke2fs -t ext4 -m 0 -F -L firefoxcache -E lazy_itable_init=0,lazy_journal_init=0 $externaldrivedirpath/firefoxcache
+mke2fs -t ext4 -m 0 -F -O ^64bit -L firefoxcache -E lazy_itable_init=0,lazy_journal_init=0 $externaldrivedirpath/firefoxcache
 echo "$externaldrivedirpath/firefoxcache  /home/pi/.cache/mozilla/         ext4    defaults          0       4" >> /etc/fstab
 ### Swap file
 dd if=/dev/zero of=$externaldrivedirpath/swapfile bs=1M count=2048
