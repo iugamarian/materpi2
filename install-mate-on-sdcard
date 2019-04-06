@@ -191,7 +191,8 @@ echo ""
 sleep 2
 sync
 sleep 2
-mv mountdir/boot/config.txt mountdir/boot/config.old
+#mv mountdir/boot/config.txt mountdir/boot/config.old
+sed -i 's/hdmi_drive=2/#hdmi_drive=2/g' /boot/config.txt
 cat <<EOF >> mountdir/boot/config.txt
 # Maximum resources to video card for best 1080p high bitrate h264 decoding
 gpu_mem=256
