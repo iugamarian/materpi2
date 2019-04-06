@@ -1,5 +1,7 @@
 #!/bin/bash
 # RESIZE ROOT PART 1 OF 2
+echo "Resize root not required any more, go to configure-mate03"
+exit 1
 # Check to see if running as root
 echo -e "\nChecking for root."
 if [ `id -u` != 0 ]; then
