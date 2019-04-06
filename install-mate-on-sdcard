@@ -192,7 +192,7 @@ sleep 2
 sync
 sleep 2
 mv mountdir/boot/config.txt mountdir/boot/config.old
-cat <<EOF > mountdir/boot/config.txt
+cat <<EOF >> mountdir/boot/config.txt
 # Maximum resources to video card for best 1080p high bitrate h264 decoding
 gpu_mem=256
 framebuffer_depth=24
