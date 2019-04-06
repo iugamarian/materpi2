@@ -193,16 +193,18 @@ sync
 sleep 2
 mv mountdir/boot/config.txt mountdir/boot/config.old
 cat <<EOF > mountdir/boot/config.txt
-hdmi_group=2
-hdmi_mode=35
-hdmi_drive=2
-# According to https://ubuntu-mate.community/t/hdmi-on-rpi-ubuntumate/1248/19
-hdmi_force_edid_audio=1
-hdmi_force_hotplug=1
+# Maximum resources to video card for best 1080p high bitrate h264 decoding
 gpu_mem=256
 framebuffer_depth=24
 start_file=start_x.elf
 fixup_file=fixup_x.dat
+# Optimized for 1280x1024 DVI monitor
+hdmi_group=2
+hdmi_mode=35
+hdmi_drive=1
+hdmi_force_hotplug=1
+# Allow monitor to turn off not just display black screen on sleep
+hdmi_blanking=1
 avoid_warnings=2
 max_usb_current=1
 # Avoid power supply overload by not boosting usb network chip
@@ -219,10 +221,13 @@ smsc95xx.turbo_mode=N
 #sdram_freq=450
 # To reduce power draw spikes force_turbo needs to be 1
 #force_turbo=1
-# Allow monitor to turn off not just display black screen on sleep
-#hdmi_blanking=1
-# Allow sound after kernel update
-dtparam=audio=on
+
+# For audio but DVI monitor does not display anything
+#hdmi_drive=2
+# For audio according to https://ubuntu-mate.community/t/hdmi-on-rpi-ubuntumate/1248/19
+#hdmi_force_edid_audio=1
+# For audio allow sound after kernel update
+#dtparam=audio=on
 EOF
 cp configure-mate* mountdir/root
 cp external-mate* mountdir/root
