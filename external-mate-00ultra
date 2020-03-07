@@ -257,7 +257,7 @@ echo ""
 echo "Formatting small partition:"
 echo ""
 # Disabling lazy options so that all inodes get written now not bit by bit later.
-mke2fs -t ext4 -m 0 -F -O ^64bit -L firefoxcache -E lazy_itable_init=0,lazy_journal_init=0 $firefoxcachepartition
+mke2fs -t ext4 -m 0 -F -O ^metadata_csum,^64bit -L firefoxcache -E lazy_itable_init=0,lazy_journal_init=0 $firefoxcachepartition
 sleep 2
 echo ""
 echo -n "/etc/fstab entry:"
