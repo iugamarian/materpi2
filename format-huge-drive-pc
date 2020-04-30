@@ -207,14 +207,39 @@ sleep 2
 #Tip: Most Linux native file systems map to the same partition code (0x83), so it is
 #perfectly safe to e.g. use ext2 for an ext4-formatted partition.
 # BOOT
-parted -s $drivetobeformatted unit cyl mkpart primary ext2 -- 1 47
+# parted -s $drivetobeformatted unit cyl mkpart primary ext2 -- 1 47
 # one cylinder is about 60 MB in size, 63 cylinders, start from 1 not 0 to avoid mbr writeover
-sleep 2
+# sleep 2
 # SWAP
-parted -s $drivetobeformatted unit cyl mkpart primary ext2 -- 48 579
-sleep 2
+# parted -s $drivetobeformatted unit cyl mkpart primary ext2 -- 48 579
+# sleep 2
 # ROOT
-parted -s $drivetobeformatted unit cyl mkpart primary ext2 -- 580 -2
+# parted -s $drivetobeformatted unit cyl mkpart primary ext2 -- 580 -2
+##########################################################################
+# https://rainbow.chard.org/2013/01/30/how-to-align-partitions-for-best-performance-using-parted/
+# Get the alignment parameters for your array (remember to replace sdb with the name of your device as seen by the kernel).
+# cat /sys/block/sdb/queue/optimal_io_size
+# 1048576
+# cat /sys/block/sdb/queue/minimum_io_size
+# 262144
+# cat /sys/block/sdb/alignment_offset
+# 0
+# cat /sys/block/sdb/queue/physical_block_size
+# 512
+# Add optimal_io_size to alignment_offset and divide the result by physical_block_size. In my case this was (1048576 + 0) / 512 = 2048.
+# This number is the sector at which the partition should start. Your new parted command should look like
+# mkpart primary 2048s 100%
+# BOOT size 896 MB
+parted -s $drivetobeformatted mkpart primary ext2 -- 262144s 2097152s
+# one cylinder is about 60 MB in size, 63 cylinders, start from 1 not 0 to avoid mbr writeover
+# sleep 2
+# SWAP size 4 GB
+# parted -s $drivetobeformatted mkpart primary ext2 -- 2359926s 4297327222s
+# sleep 2
+# ROOT
+# parted -s $drivetobeformatted mkpart primary ext2 -- 580 -2
+parted -s $drivetobeformatted mkpart primary ext2 -- 4297589366s -262144s
+##########################################################################
 # sync the system disk partition tables
 partprobe $drivetobeformatted
 sleep 2
