@@ -272,7 +272,7 @@ sleep 2
 # Mount new /etc/fstab partitions so a folder belonging to "pi" can be made:
 mount -a
 sleep 2
-mkdir /home/pi/.cache/mozilla/firefox
+mkdir -p /home/pi/.cache/mozilla/firefox
 chown pi /home/pi/.cache/mozilla/firefox
 ### Storage partition
 echo -n "Storage partition is: "
@@ -286,19 +286,22 @@ sleep 2
 echo ""
 echo "/etc/fstab entry:"
 echo ""
-uuidstoragepartition=`blkid $storagepartition | sed -n 's/.*UUID=\"\([^\"]*\)\".*/\1/p'`
-externaldrivedirpath=/external
-mkdir $externaldrivedirpath
-ln -s $externaldrivedirpath external
-echo "UUID=$uuidstoragepartition $externaldrivedirpath          ext4    defaults          0       2"
+# uuidstoragepartition=`blkid $storagepartition | sed -n 's/.*UUID=\"\([^\"]*\)\".*/\1/p'`
+# https://stackoverflow.com/questions/13565658/right-tool-to-filter-the-uuid-from-the-output-of-blkid-program-using-grep-cut
+uuidstoragepartition=`blkid -s UUID -o value $storagepartition`
+externaldrivepartitiondirpath=/external
+mkdir $externaldrivepartitiondirpath
+# Shortcut from the current directory external to /external
+ln -s $externaldrivepartitiondirpath external
+echo "UUID=$uuidstoragepartition $externaldrivepartitiondirpath          ext4    defaults          0       2"
 echo ""
-echo "UUID=$uuidstoragepartition $externaldrivedirpath          ext4    defaults          0       2" >> /etc/fstab
+echo "UUID=$uuidstoragepartition $externaldrivepartitiondirpath          ext4    defaults          0       2" >> /etc/fstab
 sleep 2
 # Mount new /etc/fstab partitions so a folder belonging to "pi" can be made:
 mount -a
 sleep 2
-mkdir $externaldrivedirpath/pi
-chown pi /$externaldrivedirpath/pi
+mkdir -p $eexternaldrivepartitiondirpath/pi
+chown pi /$externaldrivepartitiondirpath/pi
 sleep 2
 sync
 sleep 2
