@@ -1,13 +1,17 @@
 #!/bin/bash
 # DRIVE PREPARE
+externaldrivepartitionlocation=/dev/sdwhatnumber
 #
-externaldrivedirpath=/external
+externaldrivepartitiondirpath=/external
 #
-externaldriveuuid=xxxxxxxx-xxxx-xxxx-xxxx-xxxx
+# externaldrivepartitionuuid=xxxxxxxx-xxxx-xxxx-xxxx-xxxx
 #
-mkdir $externaldrivedirpath
-ln -s $externaldrivedirpath external
-echo "UUID=$externaldriveuuid  $externaldrivedirpath          ext4    defaults          0       3" >> /etc/fstab
+# uuidfirefoxcachepartition=`blkid $firefoxcachepartition | sed -n 's/.*UUID=\"\([^\"]*\)\".*/\1/p'`
+# https://stackoverflow.com/questions/13565658/right-tool-to-filter-the-uuid-from-the-output-of-blkid-program-using-grep-cut
+externaldrivepartitionuuid=`blkid -s UUID -o value $externaldrivepartitionlocation`
+mkdir -p $externaldrivepartitiondirpath
+ln -s $externaldrivepartitiondirpath external
+echo "UUID=$externaldrivepartitionuuid  $externaldrivepartitiondirpath          ext4    defaults          0       3" >> /etc/fstab
 sleep 2
 sync
 sleep 2
