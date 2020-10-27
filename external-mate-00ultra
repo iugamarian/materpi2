@@ -262,7 +262,9 @@ sleep 2
 echo ""
 echo -n "/etc/fstab entry:"
 echo ""
-uuidfirefoxcachepartition=`blkid $firefoxcachepartition | sed -n 's/.*UUID=\"\([^\"]*\)\".*/\1/p'`
+# uuidfirefoxcachepartition=`blkid $firefoxcachepartition | sed -n 's/.*UUID=\"\([^\"]*\)\".*/\1/p'`
+# https://stackoverflow.com/questions/13565658/right-tool-to-filter-the-uuid-from-the-output-of-blkid-program-using-grep-cut
+uuidfirefoxcachepartition=`blkid -s UUID -o value $firefoxcachepartition`
 echo "UUID=$uuidfirefoxcachepartition /home/pi/.cache/mozilla/         ext4    defaults          0       2"
 echo ""
 echo "UUID=$uuidfirefoxcachepartition /home/pi/.cache/mozilla/         ext4    defaults          0       2" >> /etc/fstab
